@@ -14,10 +14,11 @@ import DistributionChart from "./components/Charts/DistributionChart";
 import PerformanceChart from "./components/Charts/PerformanceChart";
 import ConfidenceChart from "./components/Charts/ConfidenceChart";
 import HistoryPanel from "./components/HistoryPanel";
+import NavBar from "./components/NavBar";
 
-import { Moon, Sun, RotateCcw } from "lucide-react";
-
+// Main application component for spam detection dashboard
 export default function App() {
+  // Define application states
   const [message, setMessage] = useState("");
   const [prediction, setPrediction] = useState(null);
   const [history, setHistory] = useState([]);
@@ -27,17 +28,19 @@ export default function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [reloadingModel, setReloadingModel] = useState(false);
 
+  // Fetch initial statistics on load
   useEffect(() => {
     getStatistics().then((res) => setStats(res.data)).catch(() => {});
   }, []);
 
-  // Dark mode effect
+  // Handle theme change
   useEffect(() => {
     const html = document.documentElement;
     if (darkMode) html.classList.add("dark");
     else html.classList.remove("dark");
   }, [darkMode]);
 
+  // Handle prediction request
   const handlePredict = async () => {
     if (!message.trim()) return setError("Please enter a message first.");
     setLoading(true);
@@ -55,12 +58,14 @@ export default function App() {
     }
   };
 
+  // Handle clearing prediction history
   const handleClearHistory = async () => {
     await clearHistory();
     setHistory([]);
     setStats(await getStatistics().then((r) => r.data));
   };
 
+  // Handle reloading of model and tokenizer
   const handleReloadModel = async () => {
     try {
       setReloadingModel(true);
@@ -73,36 +78,22 @@ export default function App() {
     }
   };
 
+  // Render main app structure
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"}`}>
-      {/* Header */}
-      <header className="bg-indigo-600 text-white py-4 shadow-md">
-        <div className="max-w-6xl mx-auto flex items-center justify-between px-4">
-          <h1 className="text-2xl font-bold">Spam Detection</h1>
-          <div className="flex items-center gap-3">
-            {/* Reload Model Button */}
-            <button
-              onClick={handleReloadModel}
-              disabled={reloadingModel}
-              title="Reload CNN Model"
-              className="p-2 rounded-lg hover:bg-indigo-700 transition-colors"
-            >
-              <RotateCcw className={`w-6 h-6 ${reloadingModel ? "animate-spin" : ""}`} />
-            </button>
+    <div
+      className={`min-h-screen transition-colors duration-300 ${
+        darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-100 text-gray-900"
+      }`}
+    >
+      {/* Navigation bar */}
+      <NavBar
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        reloadingModel={reloadingModel}
+        handleReloadModel={handleReloadModel}
+      />
 
-            {/* Dark Mode Toggle */}
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="p-2 rounded-lg hover:bg-indigo-700 transition-colors"
-              title="Toggle Dark Mode"
-            >
-              {darkMode ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main */}
+      {/* Main dashboard content */}
       <main className="max-w-6xl mx-auto p-6 space-y-8">
         <PredictionForm
           message={message}
@@ -130,7 +121,7 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="text-center py-4 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700">
+      <footer className="text-center py-4 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800">
         © 2025 Spam Detection AI — Powered by CNN Deep Learning Model
       </footer>
     </div>

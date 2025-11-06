@@ -9,17 +9,22 @@ def load_model_and_tokenizer() -> bool:
     Returns True on success, False otherwise.
     """
     try:
+        # Log model loading
         logger.info(f"Loading model from {state.MODEL_PATH}")
         state.model = keras.models.load_model(state.MODEL_PATH)
         logger.info("Model loaded successfully")
 
+        # Log tokenizer loading
         logger.info(f"Loading tokenizer from {state.TOKENIZER_PATH}")
         with open(state.TOKENIZER_PATH, "rb") as f:
             state.tokenizer = pickle.load(f)
         logger.info("Tokenizer loaded successfully")
 
+        # Return success status
         return True
+
     except Exception as e:
+        # Handle and log any loading errors
         logger.error(f"Failed to load model/tokenizer: {e}")
         state.model = None
         state.tokenizer = None
