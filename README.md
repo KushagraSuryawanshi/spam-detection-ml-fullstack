@@ -1,7 +1,9 @@
 # Spam Detection using Deep Learning and Full-Stack Web Application
 
-This project implements a spam detection system using Deep Learning (CNN) integrated with a full-stack web application to classify spam messages in real time.  
-It provides interactive visualizations, analytics, and a modern user interface.
+This project was developed for COS30049, It takes the best CNN spam detection model from
+my previous repo
+[Spam-Malware-Detection-COS30049](https://github.com/KushagraSuryawanshi/Spam-Malware-Detection-COS30049)
+and wraps it into a full-stack web app with real-time predictions and visual analytics.
 
 ---
 
@@ -127,7 +129,7 @@ python -m uvicorn app.main:app --reload
 - API available at: http://127.0.0.1:8000
 - Swagger UI: http://127.0.0.1:8000/docs
 ---
-### Terminal 1 – Frontend Server
+### Terminal 2 – Frontend Server
 ```bash
 cd SpamDetection-fullstack-main/frontend
 npm run dev
@@ -255,13 +257,6 @@ All metrics are displayed dynamically in the dashboard and via ```/statistics```
 | Single message prediction | 20–50 ms  |
 | Model load        | ~3 seconds  |
 | Frontend load | <1 second 
----
-## Future Enhancements
-- Multi-language spam detection
-- Model retraining interface
-- Email spam filter integration
-- Report export (PDF/CSV)
-- Authentication and user sessions
 ---
 
 ## Troubleshooting
