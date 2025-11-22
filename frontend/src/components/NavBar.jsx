@@ -18,7 +18,9 @@ export default function NavBar({
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between px-6">
         {/* Application title */}
-        <h1 className="text-2xl font-bold tracking-tight">Spam Detection</h1>
+        <h1 className="text-2xl font-bold tracking-tight">
+          Spam Detection System
+        </h1>
 
         {/* Action buttons: reload model and toggle theme */}
         <div className="flex items-center gap-3">
@@ -40,7 +42,11 @@ export default function NavBar({
             className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-all"
             title="Toggle Dark Mode"
           >
-            {darkMode ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
+            {darkMode ? (
+              <Sun className="w-6 h-6" />
+            ) : (
+              <Moon className="w-6 h-6" />
+            )}
           </button>
         </div>
       </div>

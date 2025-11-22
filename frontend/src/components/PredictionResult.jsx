@@ -13,7 +13,9 @@ export default function PredictionResult({ result }) {
       {/* Prediction label */}
       <h3
         className={`text-xl font-semibold ${
-          isSpam ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"
+          isSpam
+            ? "text-red-600 dark:text-red-400"
+            : "text-green-600 dark:text-green-400"
         }`}
       >
         {isSpam ? "SPAM DETECTED" : "LEGITIMATE MESSAGE"}

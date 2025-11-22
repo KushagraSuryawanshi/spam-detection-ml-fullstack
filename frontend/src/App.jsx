@@ -15,6 +15,7 @@ import PerformanceChart from "./components/Charts/PerformanceChart";
 import ConfidenceChart from "./components/Charts/ConfidenceChart";
 import HistoryPanel from "./components/HistoryPanel";
 import NavBar from "./components/NavBar";
+import Footer from "./components/Footer";
 
 // Main application component for spam detection dashboard
 export default function App() {
@@ -30,7 +31,9 @@ export default function App() {
 
   // Fetch initial statistics on load
   useEffect(() => {
-    getStatistics().then((res) => setStats(res.data)).catch(() => {});
+    getStatistics()
+      .then((res) => setStats(res.data))
+      .catch(() => {});
   }, []);
 
   // Handle theme change
@@ -94,7 +97,7 @@ export default function App() {
       />
 
       {/* Main dashboard content */}
-      <main className="max-w-6xl mx-auto p-6 space-y-8">
+      <main className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
         <PredictionForm
           message={message}
           setMessage={setMessage}
@@ -108,7 +111,7 @@ export default function App() {
         {stats && (
           <>
             <StatsCards stats={stats} history={history} />
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
               <TimelineChart history={history} />
               <DistributionChart history={history} />
               <PerformanceChart stats={stats} />
@@ -121,9 +124,7 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="text-center py-4 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800">
-        © 2025 Spam Detection AI — Powered by CNN Deep Learning Model
-      </footer>
+      <Footer />
     </div>
   );
 }

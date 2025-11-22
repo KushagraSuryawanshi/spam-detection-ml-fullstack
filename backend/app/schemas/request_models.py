@@ -11,9 +11,16 @@ class MessageRequest(BaseModel):
         if not v or not v.strip():
             raise ValueError("Message cannot be empty")
         # Validate message length
-        if len(v) > 5000:
-            raise ValueError("Message too long (max 5000 characters)")
-        return v.strip()
+
+        cleaned = v.strip()
+
+        if len(cleaned) < 10:
+            raise ValueError("Message too short (minimum 10 characters required for accurate analysis)")
+        
+        if len(cleaned) > 5000:
+            raise ValueError("Message too long (maximum 5000 characters)")
+        
+        return cleaned
 
 # Schema for batch message prediction request
 class BatchMessageRequest(BaseModel):

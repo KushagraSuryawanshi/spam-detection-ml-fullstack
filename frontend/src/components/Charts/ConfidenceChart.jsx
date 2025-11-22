@@ -1,109 +1,167 @@
+import { Bar } from "react-chartjs-2";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
   Tooltip,
-  ResponsiveContainer,
-  Label,
-} from "recharts";
+  Legend,
+} from "chart.js";
+import { Download } from "lucide-react";
+import { exportChartToCSV } from "../../utils/exportUtils";
 
-// Component to visualize confidence score distribution
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+// Component to visualize confidence score distribution using Chart.js
 export default function ConfidenceChart({ history }) {
   // Define confidence ranges
   const ranges = [
-    { range: "0–20%", count: 0 },
-    { range: "20–40%", count: 0 },
-    { range: "40–60%", count: 0 },
-    { range: "60–80%", count: 0 },
-    { range: "80–100%", count: 0 },
+    { range: "0-20%", count: 0 },
+    { range: "20-40%", count: 0 },
+    { range: "40-60%", count: 0 },
+    { range: "60-80%", count: 0 },
+    { range: "80-100%", count: 0 },
   ];
 
   // Categorize prediction confidences into ranges
   history.forEach((h) => {
-    const idx = Math.min(Math.floor(h.confidence * 5), 4);
+    const idx = Math.min(Math.floor(h.confidence / 20), 4);
     ranges[idx].count += 1;
   });
 
-  // Custom tooltip for displaying bar details
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      const isDark = document.documentElement.classList.contains("dark");
-      return (
-        <div
-          style={{
-            backgroundColor: isDark ? "#1f2937" : "#f9fafb",
-            color: isDark ? "#f9fafb" : "#111827",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-            padding: "8px 12px",
-            fontSize: "0.85rem",
-            fontWeight: 500,
-            lineHeight: 1.4,
-          }}
-        >
-          <p style={{ margin: 0 }}>{label}</p>
-          <p
-            style={{
-              margin: 0,
-              color: isDark ? "#a5b4fc" : "#4f46e5",
-              fontWeight: 600,
-            }}
-          >
-            Count: {payload[0].value}
-          </p>
-        </div>
-      );
-    }
-    return null;
+  // Detect dark mode
+  const isDark = document.documentElement.classList.contains("dark");
+
+  // Chart.js data configuration
+  const chartData = {
+    labels: ranges.map((r) => r.range),
+    datasets: [
+      {
+        label: "Number of Predictions",
+        data: ranges.map((r) => r.count),
+        backgroundColor: "#8b5cf6",
+        borderColor: "#7c3aed",
+        borderWidth: 1,
+        borderRadius: 6,
+      },
+    ],
   };
 
-  // Render bar chart visualization
+  // Chart.js options configuration
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      title: {
+        display: false,
+      },
+      tooltip: {
+        backgroundColor: isDark ? "#1f2937" : "#f9fafb",
+        titleColor: isDark ? "#f9fafb" : "#111827",
+        bodyColor: isDark ? "#a5b4fc" : "#4f46e5",
+        borderColor: "#e5e7eb",
+        borderWidth: 1,
+        padding: 12,
+        displayColors: false,
+        callbacks: {
+          label: function (context) {
+            return `Count: ${context.parsed.y}`;
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: "#9ca3af",
+          font: {
+            size: 12,
+          },
+        },
+        title: {
+          display: true,
+          text: "Confidence Range",
+          color: "#4b5563",
+          font: {
+            size: 14,
+            weight: "600",
+          },
+          padding: { top: 10 },
+        },
+      },
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: "#e5e7eb",
+          drawBorder: false,
+        },
+        ticks: {
+          color: "#9ca3af",
+          font: {
+            size: 12,
+          },
+          stepSize: 1,
+        },
+        title: {
+          display: true,
+          text: "Number of Predictions",
+          color: "#4b5563",
+          font: {
+            size: 13,
+            weight: "600",
+          },
+        },
+      },
+    },
+  };
+
+  // Handle chart export
+  const handleExport = () => {
+    exportChartToCSV(
+      ranges,
+      `confidence_distribution_${new Date().toISOString().split("T")[0]}.csv`
+    );
+  };
+
+  // Render bar chart visualization using Chart.js
   return (
     <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl shadow-sm p-6 transition-all flex flex-col items-center justify-center">
-      <h3 className="font-semibold mb-4 text-gray-800 dark:text-gray-100 self-start">
-        Confidence Distribution
-      </h3>
+      {/* Header with export button */}
+      <div className="flex justify-between items-center self-stretch mb-4">
+        <h3 className="font-semibold text-gray-800 dark:text-gray-100">
+          Confidence Distribution
+        </h3>
 
+        <button
+          onClick={handleExport}
+          className="flex items-center gap-1 px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs transition-colors"
+          title="Export confidence distribution as CSV"
+        >
+          <Download size={14} />
+          Export CSV
+        </button>
+      </div>
+
+      {/* Chart.js Bar Chart */}
       <div className="flex items-center justify-center w-full h-[420px]">
-        <ResponsiveContainer width="90%" height="100%">
-          <BarChart data={ranges} margin={{ top: 20, right: 20, bottom: 40, left: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis
-              dataKey="range"
-              tick={{ fill: "#9ca3af", fontSize: 12 }}
-              axisLine={false}
-              tickLine={false}
-            >
-              <Label
-                value="Confidence Range"
-                position="bottom"
-                offset={20}
-                style={{
-                  fill: "#4b5563",
-                  fontSize: "0.9rem",
-                  fontWeight: "600",
-                }}
-              />
-            </XAxis>
-            <YAxis
-              tick={{ fill: "#9ca3af", fontSize: 12 }}
-              axisLine={false}
-              tickLine={false}
-              label={{
-                value: "Number of Predictions",
-                angle: -90,
-                position: "insideLeft",
-                fill: "#4b5563",
-                fontSize: 13,
-                fontWeight: 600,
-              }}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="count" fill="#8b5cf6" radius={[6, 6, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+        <div style={{ width: "90%", height: "100%" }}>
+          <Bar data={chartData} options={chartOptions} />
+        </div>
       </div>
     </div>
   );
